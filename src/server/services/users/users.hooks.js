@@ -1,6 +1,7 @@
 const local = require('feathers-authentication-local');
 const auth = require('feathers-authentication');
 const { iff, paramsFromClient, pluck } = require('feathers-hooks-common');
+const _ = require('lodash');
 
 module.exports = {
   before: {
@@ -10,11 +11,10 @@ module.exports = {
             // pass through the lookup query
       iff(
                 (hook) => {
-                  if (hook.params.lookup) {
-                    return false;
-                  }
+                  return !(hook.params.lookup && !_.isEmpty(hook.params.query));
                 },
-                auth.hooks.authenticate('jwt')
+                        auth.hooks.authenticate('jwt')
+
             )
     ],
     get: [],
@@ -36,7 +36,7 @@ module.exports = {
   after: {
     all: [],
     find: [
-        iff(
+      iff(
             (hook) => hook.params.lookup,
             pluck('_id', 'username')
         )

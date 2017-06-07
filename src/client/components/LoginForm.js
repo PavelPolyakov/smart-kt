@@ -24,6 +24,8 @@ class LoginForm extends Component {
             lookup: true
         }));
 
+        console.log(lookupResult);
+
         if(lookupResult && lookupResult.total) {
             user = _.first(lookupResult.data);
         } else {
