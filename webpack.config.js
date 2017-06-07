@@ -53,7 +53,7 @@ module.exports = function (env) {
         resolve: {
             extensions: ['.js', '.jsx']
         },
-        devtool: 'source-map'
+        devtool: 'inline-source-map'
     };
 
     if ((env && env['with-hmr'])) {
