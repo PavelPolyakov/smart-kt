@@ -38,14 +38,14 @@ module.exports = function () {
            * @param hook
            * @returns {*}
            */
-        function (hook) {
-          return Promise.coroutine(function *() {
-            const data = yield app.passport.verifyJWT(hook.id, { secret: app.passport.options('jwt').secret });
-            // cleaning up the user record
-            yield app.service('users').remove(data.userId);
-            return hook;
-          })();
-        }
+        // function (hook) {
+        //   return Promise.coroutine(function *() {
+        //     const data = yield app.passport.verifyJWT(hook.id, { secret: app.passport.options('jwt').secret });
+        //     // cleaning up the user record
+        //     yield app.service('users').remove(data.userId);
+        //     return hook;
+        //   })();
+        // }
       ]
     }
   });

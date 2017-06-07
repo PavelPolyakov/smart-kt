@@ -18,7 +18,6 @@ class LoginForm extends Component {
     }
 
     async onSubmit(values) {
-
         let user;
         const lookupResult = await app.service('/users').find(paramsForServer({
             query: { username: values.username },
@@ -27,14 +26,11 @@ class LoginForm extends Component {
 
         if(lookupResult && lookupResult.total) {
             user = _.first(lookupResult.data);
-            console.log(user);
         } else {
             user = await app.service('/users').create({ username: values.username });
         }
-        console.log(user);
 
         try {
-            console.log(`~~~`, user);
             // trying to logout first
             await app.logout();
             const response = await app.authenticate({
@@ -43,12 +39,11 @@ class LoginForm extends Component {
                 password: user.username
             });
             const payload = await app.passport.verifyJWT(response.accessToken)
-            const user = await app.service('users').get(payload.userId);
-            this.props.dispatch(userActions.set(user));
+            // dispatch user to the store
+            this.props.dispatch(userActions.set(await app.service('users').get(payload.userId)));
         } catch (error) {
             console.error('Error authenticating!', error);
         }
-        console.log(user);
     }
 
     render() {
