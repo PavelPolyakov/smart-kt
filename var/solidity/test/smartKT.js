@@ -1,10 +1,15 @@
 const Promise = require('bluebird');
+const _ = require('lodash');
 const SmartKT = artifacts.require("./SmartKT.sol");
 const { web3 } = SmartKT;
+
+// faking enum
+const STATUS = ['SEEDING', 'FUNDING', 'PERFORMING', 'REPAID'];
 
 contract('SmartKT', function (accounts) {
     it("successful case", function () {
         return Promise.coroutine(function *() {
+
             const instance = yield SmartKT.deployed();
 
             var events = instance.allEvents();
@@ -16,16 +21,22 @@ contract('SmartKT', function (accounts) {
 
             const ownerAddress = yield instance.owner.call();
 
+            console.log(STATUS[(yield instance.state.call())[0].toNumber()]);
+
             console.log('BEFORE:');
+            console.log('STATUS:', STATUS[(yield instance.state.call())[0].toNumber()]);
+            console.log('ownerAddress:', ownerAddress);
             console.log('from: ', accounts[0], web3.fromWei(web3.eth.getBalance(accounts[0]).toNumber(), 'ether'));
             console.log('from: ', accounts[1], web3.fromWei(web3.eth.getBalance(accounts[1]).toNumber(), 'ether'));
             console.log('from: ', accounts[2], web3.fromWei(web3.eth.getBalance(accounts[2]).toNumber(), 'ether'));
 
             // SEEDING
-            web3.eth.sendTransaction({ from: ownerAddress, to: instance.address, value: web3.toWei(1, "ether") });
-            console.log('contract: ', instance.address, web3.fromWei(web3.eth.getBalance(instance.address).toNumber(), 'ether'));
+            const fundingMilestone = yield instance.getFundingMilestone.call();
+            const ETHEUR = yield instance.ETHEUR.call();
+            const thash = web3.eth.sendTransaction({ from: ownerAddress, to: instance.address, value: web3.toWei(_.round(fundingMilestone/ETHEUR,2), "ether") });
 
             // FUNDING
+            console.log('STATUS:', STATUS[(yield instance.state.call())[0].toNumber()]);
             web3.eth.sendTransaction({
                 from: accounts[1],
                 to: instance.address,
@@ -35,44 +46,29 @@ contract('SmartKT', function (accounts) {
             web3.eth.sendTransaction({
                 from: accounts[2],
                 to: instance.address,
-                value: web3.toWei(1.5, "ether"),
+                value: web3.toWei(2.75, "ether"),
                 gas: 120000
             });
 
             // PERFORMING
+            console.log('STATUS:', STATUS[(yield instance.state.call())[0].toNumber()]);
             web3.eth.sendTransaction({ from: accounts[0], to: instance.address, value: web3.toWei(0.25, "ether") });
             web3.eth.sendTransaction({ from: accounts[0], to: instance.address, value: web3.toWei(0.25, "ether") });
             web3.eth.sendTransaction({ from: accounts[0], to: instance.address, value: web3.toWei(0.5, "ether") });
             web3.eth.sendTransaction({ from: accounts[0], to: instance.address, value: web3.toWei(1, "ether") });
-            web3.eth.sendTransaction({ from: accounts[0], to: instance.address, value: web3.toWei(1, "ether") });
+            try {
+                web3.eth.sendTransaction({ from: accounts[0], to: instance.address, value: web3.toWei(3, "ether") });
+            } catch(error) {
+                console.log(error);
+            }
 
             console.log('AFTER:');
+            console.log('STATUS:', STATUS[(yield instance.state.call())[0].toNumber()]);
             console.log('from: ', accounts[0], web3.fromWei(web3.eth.getBalance(accounts[0]).toNumber(), 'ether'));
             console.log('from: ', accounts[1], web3.fromWei(web3.eth.getBalance(accounts[1]).toNumber(), 'ether'));
             console.log('from: ', accounts[2], web3.fromWei(web3.eth.getBalance(accounts[2]).toNumber(), 'ether'));
             console.log('contract: ', instance.address, web3.fromWei(web3.eth.getBalance(instance.address).toNumber(), 'ether'));
+
         })()
-        // return MetaCoin.deployed().then(function(instance) {
-        //     return instance.getBalance.call(accounts[0]);
-        // }).then(function(balance) {
-        //     assert.equal(balance.valueOf(), 10000, "10000 wasn't in the first account");
-        // });
     });
-    // it("should call a function that depends on a linked library", function() {
-    //     var meta;
-    //     var metaCoinBalance;
-    //     var metaCoinEthBalance;
-    //
-    //     return MetaCoin.deployed().then(function(instance) {
-    //         meta = instance;
-    //         return meta.getBalance.call(accounts[0]);
-    //     }).then(function(outCoinBalance) {
-    //         metaCoinBalance = outCoinBalance.toNumber();
-    //         return meta.getBalanceInEth.call(accounts[0]);
-    //     }).then(function(outCoinBalanceEth) {
-    //         metaCoinEthBalance = outCoinBalanceEth.toNumber();
-    //     }).then(function() {
-    //         assert.equal(metaCoinEthBalance, 2 * metaCoinBalance, "Library function returned unexpected function, linkage may be broken");
-    //     });
-    // });
 });

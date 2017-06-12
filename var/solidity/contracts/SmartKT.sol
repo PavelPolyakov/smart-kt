@@ -3,6 +3,7 @@ pragma solidity ^0.4.4;
 
 contract SmartKT {
     event Log(string log, uint arg);
+
     event Exception(string error);
 
     enum STATUS {SEEDING, FUNDING, PERFORMING, REPAID}
@@ -67,7 +68,7 @@ contract SmartKT {
     function() payable {
         // handling the SEEDING phase
         if (state.status == STATUS.SEEDING) {
-            if (msg.sender != owner || msg.value != 1 ether) {
+            if (msg.sender != owner || msg.value != (milestones[uint(STATUS.FUNDING)] * 1 ether /*uint(1000000000000000000)*/ / ETHEUR)) {
                 throw;
             }
             // switching to the next phase
@@ -78,30 +79,30 @@ contract SmartKT {
 
         // handling the FUNDING phase
         if (state.status == STATUS.FUNDING) {
-            // calculating portions to issue
-            uint portionsToFund = ETHEUR * msg.value / uint(1000000000000000000);
+            // calculating cents to issue
+            uint centsToFund = ETHEUR * msg.value / 1 ether;
 
             // error, in case there is nothing fo fund
-            if (portionsToFund == 0) {
-                Exception('Error: portionsToFund is 0');
+            if (centsToFund == 0) {
+                Exception('Error: centsToFund is 0');
                 throw;
             }
 
-            // error, in case the number is too big
-            if (portionsToFund + state.balance > milestones[uint(STATUS.FUNDING)]) {
-                Exception('Error: we are going to exceed the funding, not good');
-                throw;
+            // in case the number is too big
+            if (centsToFund + state.balance > milestones[uint(STATUS.FUNDING)]) {
+                centsToFund = milestones[uint(STATUS.FUNDING)] - state.balance;
+                // sending back the extra money
+                msg.sender.transfer(msg.value - (centsToFund * 1 ether / ETHEUR));
             }
 
-            state.balance += portionsToFund;
-            balances[msg.sender] += portionsToFund;
-            Log('hello', 1);
+            state.balance += centsToFund;
+            balances[msg.sender] += centsToFund;
             balancesIndex.push(msg.sender);
 
             // switching to the next phase
             if (state.balance == milestones[uint(STATUS.FUNDING)]) {
                 // transfer the money to the borrower
-                borrower.transfer(milestones[uint(STATUS.FUNDING)] * uint(1000000000000000000) / ETHEUR);
+                borrower.transfer(milestones[uint(STATUS.FUNDING)] * 1 ether / ETHEUR);
 
                 state.status = STATUS.PERFORMING;
                 state.balance = 0;
@@ -111,22 +112,22 @@ contract SmartKT {
 
         // handling the PERFORMING phase
         if (state.status == STATUS.PERFORMING) {
-            uint portionsBoughtBack = ETHEUR * msg.value / uint(1000000000000000000);
-            //Log('portionsBoughtBack', portionsBoughtBack);
+            uint centsToBuyBack = ETHEUR * msg.value / 1 ether;
 
             // error, in case there is nothing fo fund
-            if (portionsBoughtBack == 0) {
-                Exception('Error: portionsBoughtBack is 0');
+            if (centsToBuyBack == 0) {
+                Exception('Error: centsToBuyBack are 0');
                 throw;
             }
 
             // error, in case the number is too big
-            if (portionsBoughtBack + state.balance > milestones[uint(STATUS.PERFORMING)]) {
-                Exception('Error: we are going repay more then needed, not good');
-                throw;
+            if (centsToBuyBack + state.balance > milestones[uint(STATUS.PERFORMING)]) {
+                centsToBuyBack = milestones[uint(STATUS.PERFORMING)] - state.balance;
+                // sending back the extra money
+                msg.sender.transfer(msg.value - (centsToBuyBack * 1 ether / ETHEUR));
             }
 
-            state.balance += portionsBoughtBack;
+            state.balance += centsToBuyBack;
 
             // paying back to our debtors
             for (uint i = 0; i < balancesIndex.length; i++) {
@@ -134,11 +135,9 @@ contract SmartKT {
             }
 
             // check if the loan is fully repaid
-            if(state.balance == milestones[uint(STATUS.PERFORMING)]) {
+            if (state.balance == milestones[uint(STATUS.PERFORMING)]) {
                 state.status = STATUS.REPAID;
                 state.balance = 0;
-
-                Log('remaining', this.balance);
                 // pay everything back to the owner
                 owner.transfer(this.balance);
             }
@@ -146,7 +145,7 @@ contract SmartKT {
             return;
         }
 
-        if(state.status == STATUS.REPAID) {
+        if (state.status == STATUS.REPAID) {
             throw;
         }
     }
