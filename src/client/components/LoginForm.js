@@ -6,10 +6,12 @@ import {Button} from 'reactstrap';
 import {Field, reduxForm} from 'redux-form';
 import {paramsForServer} from 'feathers-hooks-common';
 import _ from 'lodash';
+import {withRouter} from 'react-router';
 
 import * as userActions from '../store/actions/user';
 
 @connect()
+@withRouter
 @reduxForm({ form: 'loginForm' })
 @autobind
 class LoginForm extends Component {
@@ -24,9 +26,7 @@ class LoginForm extends Component {
             lookup: true
         }));
 
-        console.log(lookupResult);
-
-        if(lookupResult && lookupResult.total) {
+        if (lookupResult && lookupResult.total) {
             user = _.first(lookupResult.data);
         } else {
             user = await app.service('/users').create({ username: values.username });
@@ -42,7 +42,14 @@ class LoginForm extends Component {
             });
             const payload = await app.passport.verifyJWT(response.accessToken)
             // dispatch user to the store
-            this.props.dispatch(userActions.set(await app.service('users').get(payload.userId)));
+            const userRecord = await app.service('users').get(payload.userId);
+            this.props.dispatch(userActions.set({
+                _id: userRecord._id,
+                username: userRecord.username,
+                wallet: { address: userRecord.wallet.address }
+            }));
+
+            this.props.history.push('/');
         } catch (error) {
             console.error('Error authenticating!', error);
         }

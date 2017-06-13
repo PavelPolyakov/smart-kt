@@ -5,10 +5,13 @@ import {autobind} from "core-decorators";
 
 import {connect} from 'react-redux';
 
+import {app} from "./feathers";
+
 import Layout from "./layouts/Default";
 
 import IndexPage from "./pages/Index";
 import LoginPage from "./pages/Login";
+import ApplyPage from "./pages/Apply";
 
 import * as userActions from './store/actions/user';
 
@@ -19,8 +22,12 @@ class App extends React.Component {
         try {
             const response = await app.authenticate();
             const payload = await app.passport.verifyJWT(response.accessToken)
-            const user = await app.service('users').get(payload.userId);
-            this.props.dispatch(userActions.set(user));
+            const userRecord = await app.service('users').get(payload.userId);
+            this.props.dispatch(userActions.set({
+                _id: userRecord._id,
+                username: userRecord.username,
+                wallet: { address: userRecord.wallet.address }
+            }));
         } catch (error) {
             console.error(error);
         }
@@ -32,6 +39,8 @@ class App extends React.Component {
                 <Layout>
                     <Route path="/" exact
                            render={(props) => <IndexPage {...props}/>}/>
+                    <Route path="/apply" exact
+                           render={(props) => <ApplyPage {...props}/>}/>
                     <Route path="/login" exact
                            render={(props) => <LoginPage {...props}/>}/>
                 </Layout>

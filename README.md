@@ -1,4 +1,4 @@
-# planning-poker
+# smart-kt
 
 > 
 

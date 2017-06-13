@@ -32,6 +32,10 @@ module.exports = function () {
       ]
     },
     after: {
+      create: [
+        function(hook) {
+        }
+      ],
       remove: [
           /**
            * Cleaning up the user who had logged out
