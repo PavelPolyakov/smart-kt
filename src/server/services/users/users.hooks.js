@@ -31,7 +31,24 @@ module.exports = {
             local.hooks.hashPassword({ passwordField: 'password' }),
         ],
         update: [],
-        patch: [],
+        patch: [
+            function(hook) {
+                return Promise.coroutine(function *() {
+                    const {app} = hook;
+                    const {web3} = app;
+
+                    // in case ETH is going to be updated, recalculate to EUR
+                    if(_.has(hook.data, 'wallet.balance.ETH')) {
+                        hook.data['wallet.balance'] = {
+                            ETH: hook.data['wallet.balance.ETH'],
+                            EUR: _.ceil(web3.fromWei(hook.data['wallet.balance.ETH'], 'ether') * app.get('ETHEUR'))
+                        }
+
+                        delete hook.data['wallet.balance.ETH'];
+                    }
+                })()
+            }
+        ],
         remove: []
     },
 
@@ -47,8 +64,8 @@ module.exports = {
             function (hook) {
                 // password and private part of the wallet should not be accessible from the front-end
                 delete hook.result.password;
-                if(_.has(hook.result, 'wallet')) {
-                    hook.result.wallet = { address: hook.result.wallet.address }
+                if (_.has(hook.result, 'wallet')) {
+                    hook.result.wallet = _.pick(hook.result.wallet, ['address', 'balance'])
                 }
             }
         ],
@@ -56,7 +73,8 @@ module.exports = {
             // create the wallet and store it
             function (hook) {
                 return Promise.coroutine(function *() {
-                    const { web3 } = hook.app;
+                    const { app } = hook;
+                    const { web3 } = app;
 
                     // generate a new BIP32 12-word seed
                     const seed = lightwallet.keystore.generateRandomSeed();
@@ -71,13 +89,28 @@ module.exports = {
                     const privateKey = keyStore.exportPrivateKey(address, pwDerivedKey)
                     const serialized = keyStore.serialize();
 
-                    yield hook.service.patch(hook.result._id, { wallet: { seed, address, privateKey, serialized } });
+                    yield hook.service.patch(hook.result._id, {
+                        wallet: {
+                            seed,
+                            address,
+                            privateKey,
+                            serialized,
+                            balance: 0
+                        }
+                    });
 
                     // transfer a bonus of 1 ETH
                     web3.eth.sendTransaction({
                         from: hook.app.get('web3').mainAddress,
                         to: address,
                         value: web3.toWei(1, 'ether')
+                    });
+
+                    yield hook.service.patch(hook.result._id, {
+                        'wallet.balance': {
+                            'ETH': web3.eth.getBalance(address).toNumber(),
+                            'EUR': _.ceil(web3.fromWei(web3.eth.getBalance(address).toNumber(), 'ether') * app.get('ETHEUR'))
+                        }
                     });
                 })()
             }

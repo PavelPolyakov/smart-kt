@@ -16,9 +16,6 @@ const middleware = require('./middleware');
 const services = require('./services');
 const appHooks = require('./app.hooks');
 
-// web3, for interacting with the ethereum network
-const Web3 = require('web3');
-
 const app = feathers();
 
 // Load app configuration
@@ -48,7 +45,6 @@ app.configure(middleware);
 
 app.hooks(appHooks);
 
-// web3
-app.web3 = new Web3(new Web3.providers.HttpProvider(app.get('web3').url));
+app.configure(require('./plugins/web3'));
 
 module.exports = app;

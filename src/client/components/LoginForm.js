@@ -46,7 +46,7 @@ class LoginForm extends Component {
             this.props.dispatch(userActions.set({
                 _id: userRecord._id,
                 username: userRecord.username,
-                wallet: { address: userRecord.wallet.address }
+                wallet: { address: userRecord.wallet.address, balance: userRecord.wallet.balance }
             }));
 
             this.props.history.push('/');

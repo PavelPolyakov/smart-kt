@@ -11,10 +11,6 @@ import {app} from '../feathers';
 @withRouter
 @autobind
 class ApplyPage extends React.Component {
-    newLoan() {
-        app.service('loans').create({ 'hello': 'hello' });
-    }
-
     render() {
         return (
             <section className="container">
@@ -22,8 +18,6 @@ class ApplyPage extends React.Component {
                 <Row>
                     <Col>
                         <ApplicationForm></ApplicationForm>
-
-                        <Button onClick={this.newLoan}>new loan</Button>
                     </Col>
                 </Row>
             </section>
