@@ -7,6 +7,8 @@ import {Field, reduxForm} from 'redux-form';
 import {paramsForServer} from 'feathers-hooks-common';
 import _ from 'lodash';
 import {withRouter} from 'react-router';
+import renderField from "./_redux-form/renderField";
+import { isRequired } from "./_redux-form/validators";
 
 import * as userActions from '../store/actions/user';
 
@@ -60,8 +62,13 @@ class LoginForm extends Component {
         return (
             <form>
                 <div>
-                    <label htmlFor="username">Username</label>
-                    <Field name="username" component="input" type="text"/>
+                    <Field
+                        validate={[isRequired]}
+                        name="username"
+                        id="username"
+                        label="Username:"
+                        component={renderField}
+                    />
                 </div>
                 <Button onClick={handleSubmit(this.onSubmit)}>Submit</Button>
             </form>

@@ -1,6 +1,5 @@
 pragma solidity ^0.4.4;
 
-
 contract SmartKT {
     event Log(string log, uint arg);
 

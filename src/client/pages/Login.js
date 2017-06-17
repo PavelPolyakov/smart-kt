@@ -11,7 +11,7 @@ import {app} from '../feathers';
 class LoginPage extends React.Component {
     render() {
         return (
-            <section className="container">
+            <section className="container" style={{'padding': '3rem 1.5rem'}}>
                 <LoginForm/>
             </section>
         );

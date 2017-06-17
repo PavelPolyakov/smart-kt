@@ -15,7 +15,7 @@ class ApplyPage extends React.Component {
         return (
             <section className="container">
                 <Header></Header>
-                <Row>
+                <Row style={{paddingTop: '3rem'}}>
                     <Col>
                         <ApplicationForm></ApplicationForm>
                     </Col>

@@ -3,7 +3,7 @@ import {autobind} from "core-decorators";
 
 import {withRouter} from 'react-router'
 import Header from '../components/Header';
-import LoansList from '../components/LoansList';
+import Dashboard from '../components/Dashboard';
 
 import {Row, Col} from 'reactstrap';
 
@@ -16,9 +16,9 @@ class IndexPage extends React.Component {
         return (
             <section className="container">
                 <Header></Header>
-                <Row>
+                <Row style={{paddingTop: '3rem'}}>
                     <Col>
-                        <LoansList/>
+                        <Dashboard/>
                     </Col>
                 </Row>
             </section>

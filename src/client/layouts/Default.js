@@ -6,7 +6,7 @@ import {withRouter} from 'react-router';
 export default class Layout extends React.Component {
   render() {
     return (
-      <div className="container">
+      <div className="container" style={{'paddingTop': '5rem'}}>
         {this.props.children}
       </div>
     );

@@ -51,6 +51,11 @@ class App extends React.Component {
                     return prevState;
                 });
             }
+        } else {
+            this.setState((prevState, props) => {
+                prevState.loggedIn = false;
+                return prevState;
+            });
         }
     }
 

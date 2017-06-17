@@ -111,4 +111,4 @@ $RECYCLE.BIN/
 lib/
 data/
 var/test
-var/truffle/build
+var/solidity/truffle/build
