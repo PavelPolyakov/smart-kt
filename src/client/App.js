@@ -4,7 +4,7 @@ import {Router, Route, Redirect} from "react-router";
 import {autobind} from "core-decorators";
 
 import {connect} from 'react-redux';
-
+import _ from 'lodash';
 import {app} from "./feathers";
 
 import Layout from "./layouts/Default";
@@ -13,11 +13,9 @@ import IndexPage from "./pages/Index";
 import LoginPage from "./pages/Login";
 import ApplyPage from "./pages/Apply";
 
-import {withRouter} from 'react-router';
-
 import * as userActions from './store/actions/user';
 
-@connect()
+@connect(store => ({user: store.user }))
 @autobind
 class App extends React.Component {
     constructor(props) {
@@ -26,6 +24,14 @@ class App extends React.Component {
         this.state = {
             loggedIn: undefined
         }
+    }
+
+    _setLoggedIn(value) {
+        this.setState((prevState, props) => {
+            const _state = _.cloneDeep(prevState);
+            _state.loggedIn = value;
+            return _state;
+        });
     }
 
     async componentWillMount() {
@@ -41,21 +47,18 @@ class App extends React.Component {
                     wallet: { address: userRecord.wallet.address, balance: userRecord.wallet.balance }
                 }));
 
-                this.setState((prevState, props) => {
-                    prevState.loggedIn = true;
-                    return prevState;
-                });
+                this._setLoggedIn(true);
             } catch (error) {
-                this.setState((prevState, props) => {
-                    prevState.loggedIn = false;
-                    return prevState;
-                });
+                this._setLoggedIn(false);
             }
         } else {
-            this.setState((prevState, props) => {
-                prevState.loggedIn = false;
-                return prevState;
-            });
+            this._setLoggedIn(true);
+        }
+    }
+
+    componentWillReceiveProps(nextProps, nextState) {
+        if(nextProps.user) {
+            this._setLoggedIn(true);
         }
     }
 
@@ -63,11 +66,11 @@ class App extends React.Component {
         return (
             <Router history={this.props.history}>
                 <Layout>
-                    { this.props.history.location.pathname === '/' && this.state.loggedIn === false  ? <Redirect to="/login" /> : undefined }
+                    {/*{ this.props.history.location.pathname === '/' && this.state.loggedIn === false  ? <Redirect to="/login" /> : undefined }*/}
                     <Route path="/" exact
-                           render={(props) => <IndexPage {...props}/>}/>
+                           render={(props) => { return (this.state.loggedIn === undefined || this.state.loggedIn) ? <IndexPage {...props}/> : <Redirect to="/login" />}}/>
                     <Route path="/apply" exact
-                           render={(props) => <ApplyPage {...props}/>}/>
+                           render={(props) => { return (this.state.loggedIn === undefined || this.state.loggedIn) ? <ApplyPage {...props}/> : <Redirect to="/login" />}}/>
                     <Route path="/login" exact
                            render={(props) => <LoginPage {...props}/>}/>
                 </Layout>
