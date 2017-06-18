@@ -5,11 +5,7 @@ module.exports = {
         all: [],
         find: [],
         get: [],
-        create: [
-            function (hook) {
-                console.log(hook);
-            }
-        ],
+        create: [],
         update: [],
         patch: [],
         remove: []
@@ -19,18 +15,7 @@ module.exports = {
         all: [],
         find: [],
         get: [],
-        create: [
-            function (hook) {
-                return Promise.coroutine(function *() {
-                    const { app, service } = hook;
-
-                    // seed in case we need to seed this loan
-                    if (hook.result.status === 'SEEDING') {
-                        app.loans.seed(hook.result);
-                    }
-                })()
-            }
-        ],
+        create: [],
         update: [],
         patch: [],
         remove: []

@@ -21,7 +21,7 @@
     "npm": ">= 3.0.0"
   },
   "scripts": {
-    "dev": "npm run start -- --env.with-hmr",
+    "dev": "DEBUG=-cron:applications,-babel npm run start -- --env.with-hmr",
     "test": "npm run eslint && npm run mocha",
     "eslint": "eslint src/server/. test/. --config .eslintrc.json",
     "start": "node $NODE_DEBUG_OPTION src/server/",
@@ -37,8 +37,9 @@
     "connect-history-api-fallback": "^1.3.0",
     "copy-webpack-plugin": "^4.0.1",
     "cors": "^2.8.3",
+    "cron": "^1.2.1",
+    "debug": "^2.6.8",
     "eth-lightwallet": "^2.5.4",
-    "ethereumjs-testrpc": "^3.9.2",
     "feathers": "^2.1.2",
     "feathers-authentication": "^1.2.3",
     "feathers-authentication-client": "^0.3.2",
@@ -101,5 +102,6 @@
     "request": "^2.81.0",
     "request-promise": "^4.2.1",
     "webpack": "^2.5.1"
-  }
+  },
+  "false": {}
 }

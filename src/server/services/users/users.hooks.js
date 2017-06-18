@@ -19,7 +19,9 @@ module.exports = {
                 auth.hooks.authenticate('jwt')
             )
         ],
-        get: [],
+        get: [
+            paramsFromClient('frontEnd')
+        ],
         create: [
             /**
              * Add default password
@@ -32,13 +34,13 @@ module.exports = {
         ],
         update: [],
         patch: [
-            function(hook) {
+            function (hook) {
                 return Promise.coroutine(function *() {
-                    const {app} = hook;
-                    const {web3} = app;
+                    const { app } = hook;
+                    const { web3 } = app;
 
                     // in case ETH is going to be updated, recalculate to EUR
-                    if(_.has(hook.data, 'wallet.balance.ETH')) {
+                    if (_.has(hook.data, 'wallet.balance.ETH')) {
                         hook.data['wallet.balance'] = {
                             ETH: hook.data['wallet.balance.ETH'],
                             EUR: _.ceil(web3.fromWei(hook.data['wallet.balance.ETH'], 'ether') * app.get('ETHEUR'))
@@ -62,10 +64,13 @@ module.exports = {
         ],
         get: [
             function (hook) {
-                // password and private part of the wallet should not be accessible from the front-end
-                delete hook.result.password;
-                if (_.has(hook.result, 'wallet')) {
-                    hook.result.wallet = _.pick(hook.result.wallet, ['address', 'balance'])
+                // query from the front-end side
+                if (hook.params.frontEnd === true) {
+                    // password and private part of the wallet should not be accessible from the front-end
+                    delete hook.result.password;
+                    if (_.has(hook.result, 'wallet')) {
+                        hook.result.wallet = _.pick(hook.result.wallet, ['address', 'balance'])
+                    }
                 }
             }
         ],

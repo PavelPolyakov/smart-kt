@@ -6,6 +6,7 @@ import {autobind} from "core-decorators";
 import {connect} from 'react-redux';
 import _ from 'lodash';
 import {app} from "./feathers";
+import {paramsForServer} from 'feathers-hooks-common';
 
 import Layout from "./layouts/Default";
 
@@ -15,7 +16,7 @@ import ApplyPage from "./pages/Apply";
 
 import * as userActions from './store/actions/user';
 
-@connect(store => ({user: store.user }))
+@connect(store => ({ user: store.user }))
 @autobind
 class App extends React.Component {
     constructor(props) {
@@ -36,11 +37,11 @@ class App extends React.Component {
 
     async componentWillMount() {
         // try to authenticate in case feathers-jwt exists
-        if(localStorage.getItem('feathers-jwt')) {
+        if (localStorage.getItem('feathers-jwt')) {
             try {
                 const response = await app.authenticate();
                 const payload = await app.passport.verifyJWT(response.accessToken)
-                const userRecord = await app.service('users').get(payload.userId);
+                const userRecord = await app.service('users').get(payload.userId, paramsForServer({ frontEnd: true }));
                 this.props.dispatch(userActions.set({
                     _id: userRecord._id,
                     username: userRecord.username,
@@ -52,12 +53,12 @@ class App extends React.Component {
                 this._setLoggedIn(false);
             }
         } else {
-            this._setLoggedIn(true);
+            this._setLoggedIn(false);
         }
     }
 
     componentWillReceiveProps(nextProps, nextState) {
-        if(nextProps.user) {
+        if (nextProps.user) {
             this._setLoggedIn(true);
         }
     }
@@ -66,11 +67,16 @@ class App extends React.Component {
         return (
             <Router history={this.props.history}>
                 <Layout>
-                    {/*{ this.props.history.location.pathname === '/' && this.state.loggedIn === false  ? <Redirect to="/login" /> : undefined }*/}
                     <Route path="/" exact
-                           render={(props) => { return (this.state.loggedIn === undefined || this.state.loggedIn) ? <IndexPage {...props}/> : <Redirect to="/login" />}}/>
+                           render={(props) => {
+                               return (this.state.loggedIn === undefined || this.state.loggedIn) ?
+                                   <IndexPage {...props}/> : <Redirect to="/login"/>
+                           }}/>
                     <Route path="/apply" exact
-                           render={(props) => { return (this.state.loggedIn === undefined || this.state.loggedIn) ? <ApplyPage {...props}/> : <Redirect to="/login" />}}/>
+                           render={(props) => {
+                               return (this.state.loggedIn === undefined || this.state.loggedIn) ?
+                                   <ApplyPage {...props}/> : <Redirect to="/login"/>
+                           }}/>
                     <Route path="/login" exact
                            render={(props) => <LoginPage {...props}/>}/>
                 </Layout>

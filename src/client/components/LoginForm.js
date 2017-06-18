@@ -8,7 +8,7 @@ import {paramsForServer} from 'feathers-hooks-common';
 import _ from 'lodash';
 import {withRouter} from 'react-router';
 import renderField from "./_redux-form/renderField";
-import { isRequired } from "./_redux-form/validators";
+import {isRequired} from "./_redux-form/validators";
 
 import * as userActions from '../store/actions/user';
 
@@ -23,7 +23,7 @@ class LoginForm extends Component {
 
     async onSubmit(values) {
         let user;
-        const lookupResult = await app.service('/users').find(paramsForServer({
+        const lookupResult = await app.service('users').find(paramsForServer({
             query: { username: values.username },
             lookup: true
         }));
@@ -31,7 +31,7 @@ class LoginForm extends Component {
         if (lookupResult && lookupResult.total) {
             user = _.first(lookupResult.data);
         } else {
-            user = await app.service('/users').create({ username: values.username });
+            user = await app.service('users').create({ username: values.username });
         }
 
         try {
@@ -44,7 +44,7 @@ class LoginForm extends Component {
             });
             const payload = await app.passport.verifyJWT(response.accessToken)
             // dispatch user to the store
-            const userRecord = await app.service('users').get(payload.userId);
+            const userRecord = await app.service('users').get(payload.userId, paramsForServer({ frontEnd: true }));
             this.props.dispatch(userActions.set({
                 _id: userRecord._id,
                 username: userRecord.username,

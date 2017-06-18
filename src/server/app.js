@@ -46,8 +46,8 @@ app.configure(middleware);
 app.hooks(appHooks);
 
 app.configure(require('./plugins/web3'));
-app.configure(require('./plugins/scoring'));
 app.configure(require('./plugins/smartKT'));
-app.configure(require('./plugins/loans'));
+app.configure(require('./plugins/domains'));
+app.configure(require('./plugins/cron'));
 
 module.exports = app;
