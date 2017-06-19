@@ -16,7 +16,7 @@ import ApplyPage from "./pages/Apply";
 
 import * as userActions from './store/actions/user';
 
-@connect(store => ({ user: store.user }))
+@connect(state => ({ user: state.user }))
 @autobind
 class App extends React.Component {
     constructor(props) {

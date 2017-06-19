@@ -5,7 +5,7 @@ import {Row, Col, Card, CardBlock, CardTitle, CardText, Badge, Button} from 'rea
 import {app} from "../feathers";
 
 
-@connect((store) => ({ user: store.user }))
+@connect((state) => ({ user: state.user }))
 @autobind
 export default class Loan extends Component {
 

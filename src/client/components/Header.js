@@ -9,9 +9,9 @@ import _ from 'lodash';
 
 import * as userActions from '../store/actions/user';
 
-@connect(store => {
+@connect(state => {
     return {
-        user: store.user
+        user: state.user
     }
 })
 @withRouter

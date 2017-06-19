@@ -7,7 +7,7 @@ import Loan from './Loan';
 import Application from './Application';
 import _ from 'lodash';
 
-@connect(store => ({}))
+@connect(state => ({}))
 @autobind
 export default class Dashboard extends Component {
     constructor(props) {

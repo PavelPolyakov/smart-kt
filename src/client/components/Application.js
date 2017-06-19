@@ -4,7 +4,7 @@ import {Row, Col, Card, CardBlock, CardTitle, CardText, Badge} from 'reactstrap'
 import EuroLoader from './EuroLoader';
 import _ from 'lodash';
 
-@connect((store) => ({}))
+@connect((state) => ({}))
 export default class Application extends Component {
     render() {
         const { application } = this.props;

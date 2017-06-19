@@ -11,7 +11,7 @@ import renderField from "./_redux-form/renderField";
 import renderRadio from "./_redux-form/renderRadio";
 import {isRequired, isTrue} from "./_redux-form/validators";
 
-@connect((store, ownProps) => ({ user: store.user }))
+@connect((state, ownProps) => ({ user: state.user }))
 @withRouter
 @reduxForm({ form: "applicationForm" })
 @autobind
