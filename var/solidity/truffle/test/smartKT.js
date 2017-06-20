@@ -40,7 +40,7 @@ contract('SmartKT', function (accounts) {
             web3.eth.sendTransaction({
                 from: accounts[1],
                 to: instance.address,
-                value: web3.toWei(0.5, "ether"),
+                value: web3.toWei(0.2, "ether"),
                 gas: 120000
             });
             web3.eth.sendTransaction({

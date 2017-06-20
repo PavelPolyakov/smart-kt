@@ -95,8 +95,13 @@ contract SmartKT {
             }
 
             state.balance += centsToFund;
+
+            // push to index, in case there is no such mapping record
+            if(balances[msg.sender] == uint(0)) {
+                balancesIndex.push(msg.sender);
+            }
+            // add cents to balance
             balances[msg.sender] += centsToFund;
-            balancesIndex.push(msg.sender);
 
             // switching to the next phase
             if (state.balance == milestones[uint(STATUS.FUNDING)]) {
