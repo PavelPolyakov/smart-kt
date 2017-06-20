@@ -8,6 +8,7 @@ module.exports = function (app) {
     autoload: true
   });
 
+  // extending the model
   Model.STATUS = ['SEEDING', 'FUNDING', 'PERFORMING', 'REPAID'];
 
   return Model;

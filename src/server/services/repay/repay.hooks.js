@@ -5,7 +5,12 @@ module.exports = {
     all: [],
     find: [],
     get: [],
-    create: [],
+    create: [
+        function (hook) {
+            // adding the
+            hook.data.user_id = hook.params.user._id;
+        }
+    ],
     update: [],
     patch: [],
     remove: []

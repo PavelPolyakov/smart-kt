@@ -108,7 +108,7 @@ module.exports = {
                     web3.eth.sendTransaction({
                         from: hook.app.get('web3').mainAddress,
                         to: address,
-                        value: web3.toWei(1, 'ether')
+                        value: web3.toWei(2, 'ether')
                     });
 
                     yield hook.service.patch(hook.result._id, {

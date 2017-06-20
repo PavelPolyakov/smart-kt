@@ -22,23 +22,13 @@ class Service {
             const user = yield app.service('users').get(data.user_id);
             const loan = yield app.service('loans').get(data.loan_id);
 
-            // const rawTx = {
-            //     to: loan.address,
-            //     value: web3.toWei(data.amount / app.get('ETHEUR'), 'ether'),
-            //     gas: 120000
-            // };
-            //
-            // console.log('raw transaction', rawTx);
-            //
-            // const tx = new Tx(rawTx);
-            // tx.sign(new Buffer(user.wallet.privateKey, 'hex'));
-            // const serializedTx = tx.serialize();
-
             const txOptions = {
+                nonce: web3.eth.getTransactionCount(user.wallet.address),
                 to: loan.address,
-                value: web3.toWei(data.amount / app.get('ETHEUR'), 'ether'),
-                gas: 120000
+                value: web3.toWei(data.amount / app.get('ETHEUR'), 'ether')
             };
+
+            txOptions.gasLimit = web3.eth.estimateGas(txOptions);
 
             const ks = lightwallet.keystore.deserialize(user.wallet.serialized);
             const pwDerivedKey = yield Promise.promisify(ks.keyFromPassword).bind(ks)(user._id);
@@ -46,11 +36,23 @@ class Service {
             const valueTx = txutils.valueTx(txOptions);
             const signedValueTx = signing.signTx(ks, pwDerivedKey, valueTx, user.wallet.address);
 
-            web3.eth.sendRawTransaction(signedValueTx);
+            const tx = web3.eth.sendRawTransaction(signedValueTx);
 
-            loan.funding.push({ user_id: data.user_id, amount: data.amount });
-            yield app.service('loans').patch(loan._id, { 'funding': loan.funding });
-            yield app.service('users').patch(user._id, { 'wallet.balance.ETH': web3.getBalance(user.wallet.address).toNumber() });
+            const SmartKTInstance = app.smartKT.getByAddress(loan.address);
+            const state = SmartKTInstance.state();
+
+            loan.funding.push({ user_id: data.user_id, amount: data.amount, tx });
+            yield app.service('loans').patch(loan._id, { 'funding': loan.funding, 'state': {
+                status: app.service('loans').Model.STATUS[state[0]],
+                balance: state[1].toNumber()
+            } });
+            yield app.service('users').patch(user._id, { 'wallet.balance.ETH': web3.eth.getBalance(user.wallet.address).toNumber() });
+
+            // if it turned to performing, update borrower balance
+            if(app.service('loans').Model.STATUS[state[0]] === 'PERFORMING') {
+                const borrower = yield app.service('users').get(loan.user_id);
+                yield app.service('users').patch(borrower._id, {'wallet.balance.ETH': web3.eth.getBalance(borrower.wallet.address).toNumber()});
+            }
 
         })().bind(this);
     }

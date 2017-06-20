@@ -1,7 +1,7 @@
 import React, {Component} from "react";
 import {autobind} from "core-decorators";
 import {connect} from "react-redux";
-import {reduxForm, Field, isValid} from "redux-form";
+import {reduxForm, Form, Field, isValid} from "redux-form";
 import {withRouter} from "react-router";
 import {app} from "../feathers";
 import {Button} from "reactstrap";
@@ -33,7 +33,7 @@ export default class Test extends Component {
 
         return (
             <div>
-                <form>
+                <Form onSubmit={handleSubmit(this.onSubmit)}>
                     <div>
                         <Field
                             validate={[isRequired]}
@@ -63,8 +63,8 @@ export default class Test extends Component {
                             component={renderCheckbox}
                         />
                     </div>
-                    <Button color="primary" disabled={!this.props.valid ? true : false} onClick={handleSubmit(this.onSubmit)}>Apply</Button>
-                </form>
+                    <Button color="primary" disabled={!this.props.valid ? true : false} type="submit">Apply</Button>
+                </Form>
             </div>
         );
     }

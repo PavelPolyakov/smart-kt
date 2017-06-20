@@ -3,7 +3,7 @@ import {autobind} from "core-decorators";
 import {connect} from 'react-redux';
 import {app} from "../feathers";
 import {Button} from 'reactstrap';
-import {Field, reduxForm} from 'redux-form';
+import {Form, Field, reduxForm} from 'redux-form';
 import {paramsForServer} from 'feathers-hooks-common';
 import _ from 'lodash';
 import {withRouter} from 'react-router';
@@ -60,7 +60,7 @@ class LoginForm extends Component {
     render() {
         const { handleSubmit } = this.props;
         return (
-            <form>
+            <Form onSubmit={handleSubmit(this.onSubmit)}>
                 <div>
                     <Field
                         validate={[isRequired]}
@@ -70,8 +70,8 @@ class LoginForm extends Component {
                         component={renderField}
                     />
                 </div>
-                <Button onClick={handleSubmit(this.onSubmit)}>Submit</Button>
-            </form>
+                <Button type="submit">Submit</Button>
+            </Form>
         );
     }
 }

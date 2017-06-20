@@ -135,7 +135,7 @@ contract SmartKT {
 
             // paying back to our debtors
             for (uint i = 0; i < balancesIndex.length; i++) {
-                balancesIndex[i].transfer(msg.value * balances[balancesIndex[i]] / milestones[uint(STATUS.FUNDING)]);
+                balancesIndex[i].transfer((centsToBuyBack * 1 ether / ETHEUR) * balances[balancesIndex[i]] / milestones[uint(STATUS.FUNDING)]);
             }
 
             // check if the loan is fully repaid

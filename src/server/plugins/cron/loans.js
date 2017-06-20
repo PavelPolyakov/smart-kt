@@ -25,7 +25,7 @@ module.exports = function (app) {
                         _id: {
                             $nin: self.inProgressIds
                         },
-                        status: 'SEEDING'
+                        'state.status': 'SEEDING'
                     }
                 })).data;
                 debug(`SEEDING watcher, result: ${loans.length}`);
@@ -47,8 +47,8 @@ module.exports = function (app) {
                     });
 
                     // update status
-                    const status = app.domains.loans.STATUS[SmartKTInstance.state()[0]];
-                    yield app.service('loans').patch(loan._id, { status });
+                    const status = app.service('loans').Model.STATUS[SmartKTInstance.state()[0]];
+                    yield app.service('loans').patch(loan._id, { 'state.status': status });
                 }
 
                 // remove the records from the list of currently processed records

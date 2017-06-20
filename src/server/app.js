@@ -47,7 +47,6 @@ app.hooks(appHooks);
 
 app.configure(require('./plugins/web3'));
 app.configure(require('./plugins/smartKT'));
-app.configure(require('./plugins/domains'));
 app.configure(require('./plugins/cron'));
 
 module.exports = app;
