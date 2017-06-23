@@ -1,9 +1,5 @@
 #!/bin/bash
 
-# in case we want to store it consistantly
-# --db=$(pwd)/data/testrpc
-# echo $(pwd)/data/testrpc
-
 # launching with 5 accounts, issuing 1000 ETH to all of them
 # 0xac4a5e4d788f2e3e6823466d834bb1d3f00b8b61
 # 0x1e8459578e11ea4b3d933185cd786101ff7aa57a

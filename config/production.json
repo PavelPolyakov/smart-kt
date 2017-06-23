@@ -1,4 +1,8 @@
 {
-  "host": "planning-poker-app.feathersjs.com",
-  "port": "PORT"
+  "host": "smart-kt.pavelpolyakov.com",
+  "port": "5050",
+  "web3": {
+    "url": "http://127.0.0.1:8545",
+    "mainAddress": "0xac4a5e4d788f2e3e6823466d834bb1d3f00b8b61"
+  }
 }

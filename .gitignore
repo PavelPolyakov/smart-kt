@@ -112,3 +112,4 @@ lib/
 data/
 var/test
 var/solidity/truffle/build
+public/bundle.*
