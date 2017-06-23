@@ -48,7 +48,7 @@ module.exports = function (env) {
                 { from: 'node_modules/bootstrap/dist/', to: 'vendor/bootstrap/dist' }
             ]),
             new HtmlWebpackIncludeAssetsPlugin({
-                assets: ['vendor/bootstrap/dist/css/bootstrap.css'],
+                assets: ['vendor/bootstrap/dist/css/bootstrap.css', 'assets/font-awesome-4.7.0/css/font-awesome.css'],
                 append: false
             }),
             new webpack.NamedModulesPlugin(),

@@ -49,7 +49,9 @@ export default class Header extends Component {
                     { this.props.location.pathname === '/apply' ?
                         <Link to="/">&larr; Dashboard</Link> :
                         <Button color="success" style={{ cursor: 'pointer' }}
-                                onClick={() => this.props.history.push('/apply')}>Apply for a loan</Button> }
+                                onClick={() => this.props.history.push('/apply')}>
+                            Apply for a loan{' '}
+                        </Button> }
                 </Col>
             </Row>
         );

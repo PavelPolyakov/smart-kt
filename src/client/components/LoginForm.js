@@ -19,9 +19,19 @@ import * as userActions from '../store/actions/user';
 class LoginForm extends Component {
     constructor(props) {
         super(props);
+
+        this.state = {
+            loggingIn: false
+        }
     }
 
     async onSubmit(values) {
+        this.setState((prevState, props) => {
+            const _state = _.cloneDeep(prevState);
+            _state.loggingIn = true;
+            return _state;
+        });
+
         let user;
         const lookupResult = await app.service('users').find(paramsForServer({
             query: { username: values.username },
@@ -42,18 +52,26 @@ class LoginForm extends Component {
                 _id: user._id,
                 password: user.username
             });
+
+            this.setState((prevState, props) => {
+                const _state = _.cloneDeep(prevState);
+                _state.loggingIn = false;
+                return _state;
+            });
+
             const payload = await app.passport.verifyJWT(response.accessToken)
             // dispatch user to the store
             const userRecord = await app.service('users').get(payload.userId, paramsForServer({ frontEnd: true }));
-            this.props.dispatch(userActions.set({
-                _id: userRecord._id,
-                username: userRecord.username,
-                wallet: { address: userRecord.wallet.address, balance: userRecord.wallet.balance }
-            }));
 
             this.props.history.push('/');
         } catch (error) {
             console.error('Error authenticating!', error);
+        } finally {
+            this.setState((prevState, props) => {
+                const _state = _.cloneDeep(prevState);
+                _state.loggingIn = false;
+                return _state;
+            });
         }
     }
 
@@ -70,7 +88,10 @@ class LoginForm extends Component {
                         component={renderField}
                     />
                 </div>
-                <Button type="submit">Submit</Button>
+                <Button type="submit" disabled={this.state.loggingIn}>
+                    Submit{' '}
+                    { this.state.loggingIn ? <i class="fa fa-refresh fa-1x fa-spin"></i> : undefined }
+                </Button>
             </Form>
         );
     }
