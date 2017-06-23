@@ -53,12 +53,6 @@ class LoginForm extends Component {
                 password: user.username
             });
 
-            this.setState((prevState, props) => {
-                const _state = _.cloneDeep(prevState);
-                _state.loggingIn = false;
-                return _state;
-            });
-
             const payload = await app.passport.verifyJWT(response.accessToken)
             // dispatch user to the store
             const userRecord = await app.service('users').get(payload.userId, paramsForServer({ frontEnd: true }));
@@ -71,7 +65,6 @@ class LoginForm extends Component {
                 _state.loggingIn = false;
                 return _state;
             });
-        } finally {
         }
     }
 
