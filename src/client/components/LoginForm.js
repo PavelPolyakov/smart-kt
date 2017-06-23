@@ -66,12 +66,12 @@ class LoginForm extends Component {
             this.props.history.push('/');
         } catch (error) {
             console.error('Error authenticating!', error);
-        } finally {
             this.setState((prevState, props) => {
                 const _state = _.cloneDeep(prevState);
                 _state.loggingIn = false;
                 return _state;
             });
+        } finally {
         }
     }
 
