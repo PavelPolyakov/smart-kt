@@ -22,26 +22,25 @@ class Service {
             const user = yield app.service('users').get(data.user_id);
             const loan = yield app.service('loans').get(data.loan_id);
 
-            const txOptions = {
+            const rawTx = {
                 nonce: web3.eth.getTransactionCount(user.wallet.address),
                 to: loan.address,
-                value: web3.toWei(data.amount / app.get('ETHEUR'), 'ether')
+                value: web3.toWei(data.amount / app.get('ETHEUR'), 'ether'),
+                data: web3.fromAscii(JSON.stringify({ETHEUR:app.get('ETHEUR')}))
             };
 
-            txOptions.gasLimit = web3.eth.estimateGas(txOptions);
+            rawTx.gasLimit = web3.eth.estimateGas(rawTx);
 
-            const ks = lightwallet.keystore.deserialize(user.wallet.serialized);
-            const pwDerivedKey = yield Promise.promisify(ks.keyFromPassword).bind(ks)(user._id);
+            const tx = new Tx(rawTx);
+            tx.sign(new Buffer(user.wallet.privateKey, 'hex'));
 
-            const valueTx = txutils.valueTx(txOptions);
-            const signedValueTx = signing.signTx(ks, pwDerivedKey, valueTx, user.wallet.address);
-
-            const tx = web3.eth.sendRawTransaction(signedValueTx);
+            const serializedTx = tx.serialize();
+            const hash = web3.eth.sendRawTransaction(serializedTx);
 
             const SmartKTInstance = app.smartKT.getByAddress(loan.address);
             const state = SmartKTInstance.state();
 
-            loan.repayment.push({ user_id: data.user_id, amount: data.amount, tx });
+            loan.repayment.push({ user_id: data.user_id, amount: data.amount, hash });
             yield app.service('loans').patch(loan._id, {
                 'repayment': loan.repayment, 'state': {
                     status: app.service('loans').Model.STATUS[state[0]],
