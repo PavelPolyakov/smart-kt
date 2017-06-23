@@ -41,6 +41,9 @@ module.exports = function (env) {
                 template: './src/client/index.html',
                 inject: "body"
             }),
+            new webpack.DefinePlugin({
+                HOST: process.env.NODE_ENV === 'production' ? JSON.stringify('http://smart-kt.pavelpolyakov.com') : JSON.stringify('http://localhost:3030'),
+            }),
             new CopyWebpackPlugin([
                 { from: 'node_modules/bootstrap/dist/', to: 'vendor/bootstrap/dist' }
             ]),

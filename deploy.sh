@@ -6,4 +6,5 @@ ssh $ssh_opt ocelot "cd /var/www/smart-kt.pavelpolyakov.com ;
 git fetch;
 git reset --hard origin/master;
 npm i;
-npm run build; ";
+npm run build;
+supervisorctl restart smart-kt";

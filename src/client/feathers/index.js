@@ -1,7 +1,8 @@
+/* global HOST */
 import feathers from 'feathers-client';
 import io from 'socket.io-client';
 
-const host = 'http://localhost:3030';
+const host = HOST.toString();
 const socket = io(host);
 
 import {services} from './services';
