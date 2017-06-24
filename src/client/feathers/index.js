@@ -9,7 +9,7 @@ import {services} from './services';
 
 import auth from 'feathers-authentication-client';
 
-export const app = feathers().configure(feathers.socketio(socket))
+export const app = feathers().configure(feathers.socketio(socket, {timeout: 15000}))
     .configure(auth({ storage: window.localStorage }))
     .configure(feathers.hooks())
     .configure(services);
