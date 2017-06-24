@@ -56,8 +56,19 @@ class LoginForm extends Component {
             const payload = await app.passport.verifyJWT(response.accessToken)
             // dispatch user to the store
             const userRecord = await app.service('users').get(payload.userId, paramsForServer({ frontEnd: true }));
+            this.props.dispatch(userActions.set({
+                _id: userRecord._id,
+                username: userRecord.username,
+                wallet: { address: userRecord.wallet.address, balance: userRecord.wallet.balance }
+            }));
 
-            this.props.history.push('/');
+            this.setState((prevState, props) => {
+                const _state = _.cloneDeep(prevState);
+                _state.loggingIn = false;
+                return _state;
+            }, () => {
+                this.props.history.push('/');
+            });
         } catch (error) {
             console.error('Error authenticating!', error);
             this.setState((prevState, props) => {

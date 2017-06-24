@@ -48,14 +48,12 @@ export default class Dashboard extends Component {
                 const record = _.find(_state.applications, (record) => record._id === application._id);
                 _.merge(record, application);
 
-                console.log(JSON.stringify(_state.applications));
                 return _state;
             });
         });
 
         app.service('applications').on('removed', (application) => {
             this.setState((prevState, props) => {
-                console.log('removing', application);
                 const _state = _.cloneDeep(prevState);
                 _.remove(_state.applications, (record) => record._id === application._id);
 
@@ -65,7 +63,6 @@ export default class Dashboard extends Component {
 
         // loans
         app.service('loans').on('created', (loan) => {
-            console.log('loan created', loan);
             this.setState((prevState, props) => {
                 const _state = _.cloneDeep(prevState);
                 _state.loans.push(loan);
@@ -74,16 +71,11 @@ export default class Dashboard extends Component {
         });
 
         app.service('loans').on('patched', (loan) => {
-            console.log('loan was patched', JSON.stringify(loan));
             this.setState((prevState, props) => {
                 const _state = _.cloneDeep(prevState);
                 const record = _.find(_state.loans, (record) => record._id === loan._id);
-                console.log('current loans', JSON.stringify(_state.loans));
-                console.log('going to merge with', JSON.stringify(record));
-                console.log('loan current state', JSON.stringify(loan));
                 _.merge(record, loan);
 
-                console.log(JSON.stringify(_state.loans));
                 return _state;
             });
         });

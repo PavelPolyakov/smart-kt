@@ -21,7 +21,7 @@
     "npm": ">= 3.0.0"
   },
   "scripts": {
-    "dev": "DEBUG=cron:loans,-babel npm run start -- --env.with-hmr",
+    "dev": "DEBUG=-,-babel npm run start -- --env.with-hmr",
     "test": "npm run eslint && npm run mocha",
     "eslint": "eslint src/server/. test/. --config .eslintrc.json",
     "start": "node $NODE_DEBUG_OPTION src/server/",

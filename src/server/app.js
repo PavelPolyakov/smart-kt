@@ -17,6 +17,8 @@ const services = require('./services');
 const appHooks = require('./app.hooks');
 
 const Promise = require('bluebird');
+const argv = require('yargs').argv;
+const _ = require('lodash');
 
 const app = feathers();
 
@@ -30,7 +32,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(favicon(path.join(app.get('public'), 'favicon.ico')));
 
-app.get('/d41d8cd98f00b204e9800998ecf8427e', function(req, res) {
+app.get('/d41d8cd98f00b204e9800998ecf8427e', function (req, res) {
     return Promise.coroutine(function *() {
         yield app.service('loans').remove(null);
         yield app.service('applications').remove(null);
@@ -40,11 +42,15 @@ app.get('/d41d8cd98f00b204e9800998ecf8427e', function(req, res) {
     }).bind(this)()
 });
 
-// check if webpack is needed
-app.configure(require('./middleware/webpack'));
 // Host the public folder
 app.use(history());
-app.use('/', feathers.static(app.get('public')));
+
+// webpack hmr or static
+if (_.get(argv, 'env.with-hmr')) {
+    app.configure(require('./middleware/webpack'));
+} else {
+    app.use('/', feathers.static(app.get('public')));
+}
 // Set up Plugins and providers
 app.configure(hooks());
 app.configure(rest());

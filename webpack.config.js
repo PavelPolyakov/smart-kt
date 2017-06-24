@@ -45,10 +45,15 @@ module.exports = function (env) {
                 HOST: process.env.NODE_ENV === 'production' ? JSON.stringify('http://smart-kt.pavelpolyakov.com') : JSON.stringify('http://localhost:3030'),
             }),
             new CopyWebpackPlugin([
+                { from: 'public/favicon.ico', to: 'favicon.ico' },
+                { from: 'public/assets/', to: 'assets' },
                 { from: 'node_modules/bootstrap/dist/', to: 'vendor/bootstrap/dist' }
             ]),
             new HtmlWebpackIncludeAssetsPlugin({
-                assets: ['vendor/bootstrap/dist/css/bootstrap.css', 'assets/font-awesome-4.7.0/css/font-awesome.css'],
+                assets: [
+                    'vendor/bootstrap/dist/css/bootstrap.css',
+                    'assets/font-awesome-4.7.0/css/font-awesome.css'
+                ],
                 append: false
             }),
             new webpack.NamedModulesPlugin(),

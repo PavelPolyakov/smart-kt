@@ -92,7 +92,7 @@ module.exports = function (app) {
                     // deploying the contract to the blockchain
                     const borrower = user.wallet.address;
                     const FUNDING = application.amountApplied;
-                    const PERFORMING = _.toNumber(application.amountApplied) + _.toNumber(app.get('ETHEUR'));
+                    const PERFORMING = _.toNumber(application.amountApplied) * 1.3;
 
                     const SmartKTInstance = yield app.smartKT.deploy(borrower, FUNDING, PERFORMING);
 
