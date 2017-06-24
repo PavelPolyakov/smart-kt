@@ -103,13 +103,13 @@ export default class Dashboard extends Component {
                 {this.state.applications.length ? <div>
                     <h2>Applications:</h2>
                     {_.map(this.state.applications, (application, index) => {
-                        return <Application key={index} application={application}/>
+                        return <div><Application key={index} application={application}/><br/></div>
                     })}
                 </div> : undefined }
                 {this.state.loans.length ? <div>
                     <h2>Loans:</h2>
                     {_.map(this.state.loans, (loan, index) => {
-                        return <Loan key={index} loan={loan}/>
+                        return <div><Loan key={index} loan={loan}/><br/></div>
                     })}
                 </div> : undefined }
             </div>

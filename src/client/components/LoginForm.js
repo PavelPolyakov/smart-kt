@@ -26,6 +26,9 @@ class LoginForm extends Component {
     }
 
     async onSubmit(values) {
+        // trim
+        values.username = _.trim(values.username);
+
         this.setState((prevState, props) => {
             const _state = _.cloneDeep(prevState);
             _state.loggingIn = true;
