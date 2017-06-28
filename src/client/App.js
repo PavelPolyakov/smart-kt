@@ -65,7 +65,7 @@ class App extends React.Component {
 
     render() {
         if(this.state.loggedIn === undefined) {
-            return undefined;
+            return null;
         }
 
         return (
