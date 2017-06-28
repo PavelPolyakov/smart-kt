@@ -64,17 +64,21 @@ class App extends React.Component {
     }
 
     render() {
+        if(this.state.loggedIn === undefined) {
+            return undefined;
+        }
+
         return (
             <Router history={this.props.history}>
                 <Layout>
                     <Route path="/" exact
                            render={(props) => {
-                               return (this.state.loggedIn === undefined || this.state.loggedIn) ?
+                               return this.state.loggedIn ?
                                    <IndexPage {...props}/> : <Redirect to="/login"/>
                            }}/>
                     <Route path="/apply" exact
                            render={(props) => {
-                               return (this.state.loggedIn === undefined || this.state.loggedIn) ?
+                               return this.state.loggedIn ?
                                    <ApplyPage {...props}/> : <Redirect to="/login"/>
                            }}/>
                     <Route path="/login" exact

@@ -29,7 +29,7 @@ export default class Dashboard extends Component {
             _state.loans = loans.data;
 
             return _state;
-        })
+        });
     }
 
     componentDidMount() {
