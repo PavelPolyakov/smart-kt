@@ -43,7 +43,7 @@ module.exports = {
                     if (_.has(hook.data, 'wallet.balance.ETH')) {
                         hook.data['wallet.balance'] = {
                             ETH: hook.data['wallet.balance.ETH'],
-                            EUR: _.ceil(web3.fromWei(hook.data['wallet.balance.ETH'], 'ether') * app.get('ETHEUR'))
+                            EUR: _.floor(web3.fromWei(hook.data['wallet.balance.ETH'], 'ether') * app.get('ETHEUR'))
                         }
 
                         delete hook.data['wallet.balance.ETH'];
@@ -114,7 +114,7 @@ module.exports = {
                     yield hook.service.patch(hook.result._id, {
                         'wallet.balance': {
                             'ETH': web3.eth.getBalance(address).toNumber(),
-                            'EUR': _.ceil(web3.fromWei(web3.eth.getBalance(address).toNumber(), 'ether') * app.get('ETHEUR'))
+                            'EUR': _.floor(web3.fromWei(web3.eth.getBalance(address).toNumber(), 'ether') * app.get('ETHEUR'))
                         }
                     });
                 })()
