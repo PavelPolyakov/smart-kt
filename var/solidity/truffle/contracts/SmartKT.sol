@@ -20,9 +20,7 @@ contract SmartKT {
 
     mapping (uint => uint) milestones;
 
-    address public owner = msg.sender;
-
-    uint public stateBalance;
+    address public owner;
 
     uint public ETHEUR;
 
