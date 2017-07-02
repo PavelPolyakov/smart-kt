@@ -33,20 +33,20 @@ contract('SmartKT', function (accounts) {
             // SEEDING
             const fundingMilestone = yield instance.getFundingMilestone.call();
             const ETHEUR = yield instance.ETHEUR.call();
-            const thash = web3.eth.sendTransaction({ from: ownerAddress, to: instance.address, value: web3.toWei(_.round(fundingMilestone/ETHEUR,2), "ether") });
+            const hash = web3.eth.sendTransaction({ from: ownerAddress, to: instance.address, value: web3.toWei(_.round(fundingMilestone/ETHEUR,2), "ether") });
 
             // FUNDING
             console.log('STATUS:', STATUS[(yield instance.state.call())[0].toNumber()]);
             web3.eth.sendTransaction({
                 from: accounts[1],
                 to: instance.address,
-                value: web3.toWei(0.2, "ether"),
+                value: web3.toWei(1.2, "ether"),
                 gas: 120000
             });
             web3.eth.sendTransaction({
                 from: accounts[2],
                 to: instance.address,
-                value: web3.toWei(2.75, "ether"),
+                value: web3.toWei(0.8, "ether"),
                 gas: 120000
             });
 

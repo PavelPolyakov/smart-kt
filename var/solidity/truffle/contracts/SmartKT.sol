@@ -133,7 +133,7 @@ contract SmartKT {
 
             state.balance += centsToBuyBack;
 
-            // paying back to our debtors
+            // paying back to our creditors
             for (uint i = 0; i < balancesIndex.length; i++) {
                 balancesIndex[i].transfer((centsToBuyBack * 1 ether / ETHEUR) * balances[balancesIndex[i]] / milestones[uint(STATUS.FUNDING)]);
             }
