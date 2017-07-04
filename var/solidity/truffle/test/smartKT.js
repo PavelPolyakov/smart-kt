@@ -12,8 +12,7 @@ contract('SmartKT', function (accounts) {
 
             const instance = yield SmartKT.deployed();
 
-            var events = instance.allEvents();
-
+            const events = instance.allEvents();
             events.watch(function (error, event) {
                 if (!error)
                     console.log(event);
@@ -21,22 +20,14 @@ contract('SmartKT', function (accounts) {
 
             const ownerAddress = yield instance.owner.call();
 
-            console.log(STATUS[(yield instance.state.call())[0].toNumber()]);
-
-            console.log('BEFORE:');
-            console.log('STATUS:', STATUS[(yield instance.state.call())[0].toNumber()]);
-            console.log('ownerAddress:', ownerAddress);
-            console.log('from: ', accounts[0], web3.fromWei(web3.eth.getBalance(accounts[0]).toNumber(), 'ether'));
-            console.log('from: ', accounts[1], web3.fromWei(web3.eth.getBalance(accounts[1]).toNumber(), 'ether'));
-            console.log('from: ', accounts[2], web3.fromWei(web3.eth.getBalance(accounts[2]).toNumber(), 'ether'));
-
             // SEEDING
+            assert.equal(STATUS[(yield instance.state.call())[0].toNumber()], 'SEEDING' , 'state.status is not SEEDING');
             const fundingMilestone = yield instance.getFundingMilestone.call();
             const ETHEUR = yield instance.ETHEUR.call();
             const hash = web3.eth.sendTransaction({ from: ownerAddress, to: instance.address, value: web3.toWei(_.round(fundingMilestone/ETHEUR,2), "ether") });
 
             // FUNDING
-            console.log('STATUS:', STATUS[(yield instance.state.call())[0].toNumber()]);
+            assert.equal(STATUS[(yield instance.state.call())[0].toNumber()], 'FUNDING' , 'state.status is not FUNDING');
             web3.eth.sendTransaction({
                 from: accounts[1],
                 to: instance.address,
@@ -51,24 +42,16 @@ contract('SmartKT', function (accounts) {
             });
 
             // PERFORMING
-            console.log('STATUS:', STATUS[(yield instance.state.call())[0].toNumber()]);
+            assert.equal(STATUS[(yield instance.state.call())[0].toNumber()], 'PERFORMING' , 'state.status is not PERFORMING');
             web3.eth.sendTransaction({ from: accounts[0], to: instance.address, value: web3.toWei(0.25, "ether") });
             web3.eth.sendTransaction({ from: accounts[0], to: instance.address, value: web3.toWei(0.25, "ether") });
             web3.eth.sendTransaction({ from: accounts[0], to: instance.address, value: web3.toWei(0.5, "ether") });
             web3.eth.sendTransaction({ from: accounts[0], to: instance.address, value: web3.toWei(1, "ether") });
-            try {
-                web3.eth.sendTransaction({ from: accounts[0], to: instance.address, value: web3.toWei(3, "ether") });
-            } catch(error) {
-                console.log(error);
-            }
+            web3.eth.sendTransaction({ from: accounts[0], to: instance.address, value: web3.toWei(3, "ether") });
 
-            console.log('AFTER:');
-            console.log('STATUS:', STATUS[(yield instance.state.call())[0].toNumber()]);
-            console.log('from: ', accounts[0], web3.fromWei(web3.eth.getBalance(accounts[0]).toNumber(), 'ether'));
-            console.log('from: ', accounts[1], web3.fromWei(web3.eth.getBalance(accounts[1]).toNumber(), 'ether'));
-            console.log('from: ', accounts[2], web3.fromWei(web3.eth.getBalance(accounts[2]).toNumber(), 'ether'));
-            console.log('contract: ', instance.address, web3.fromWei(web3.eth.getBalance(instance.address).toNumber(), 'ether'));
-
+            // REPAID
+            assert.equal(STATUS[(yield instance.state.call())[0].toNumber()], 'REPAID' , 'state.status is not REPAID');
+            assert.equal(web3.fromWei(web3.eth.getBalance(instance.address).toNumber(), 'ether'), 0 , 'Contract wasn\'t flushed');
         })()
     });
 });
